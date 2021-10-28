@@ -1,0 +1,44 @@
+---
+title: "TidyTuesday5"
+author: "Cande Torres"
+date: "10/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(brew)
+library(lubridate)
+```
+
+
+```{r}
+ultra_rankings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/ultra_rankings.csv')
+race <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/race.csv')
+
+```
+
+```{r}
+u_rank<-ultra_rankings %>% 
+  filter(race_year_id== 54013) %>% 
+  filter(!is.na(gender)) %>% 
+  mutate(time_h=time_in_seconds/3600) %>% 
+  mutate(kph=33.3/time_h) %>% 
+  group_by(age, gender) %>% 
+  summarize(mean_kph= mean(kph)) 
+ 
+u_rank %>% 
+  ggplot(aes(x=age, y= mean_kph, color=fct_rev(gender)))+ 
+  geom_line()+
+  labs(x= "Age", y= "Average Speed on kph", title = "Average Speed by Age depending on Gender during SPARNATRAIL 2019", color="Gender")
+```
+This graph shows the average speed that runners displayed depending on their age and gender during the Sparnat Trail Race 2019 in France. The graph reveals that in general, at all ages males ran faster than females, except for age 36-38 when females are faster than males. This seems to be the age when women are the fastest in general. For males, the peak occurs at 30 years old. Additionally, the graph shows that man continue running past 65 years old, the age when women stop competing. 
+
+Link to data: https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-10-26/readme.md
+

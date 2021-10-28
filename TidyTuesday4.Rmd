@@ -1,0 +1,54 @@
+---
+title: "TidyTuesday4"
+author: "Cande Torres"
+date: "10/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(maps)
+library(ggmap)
+library(devtools) 
+library(openintro)
+library(maps) #new
+library(ggthemes) #new 
+```
+
+```{r}
+pumpkins <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-19/pumpkins.csv')
+```
+
+```{r}
+states_map <- map_data("state")
+```
+
+```{r}
+pumpkins_US <-
+  pumpkins %>% 
+  filter(country == "United States") %>% 
+  group_by(`state_prov`) %>% 
+  count() %>% 
+  mutate(state_name = str_to_lower(`state_prov`))
+   
+```
+
+```{r}
+pumpkins_US %>% 
+  ggplot(aes(fill = n)) +
+  geom_map(aes(map_id = state_name), map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) + #This assures the map looks decently nice.
+  theme_map()
+```
+This map shows the amount of pumpkins grown in each state in 2013. The states that look darker grew less amount of pumpkins, while the lighter states grew more. As we can see, Wisconsin is the state that grew more pumpkins that year. In general, the mid-west and the west coast grew more pumpkins. This could be associated with the climate and the availability of land to grow vegetables. 
+
+Link to data: https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-10-19/readme.md
+
+
+

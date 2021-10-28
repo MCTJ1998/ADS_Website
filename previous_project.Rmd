@@ -1,0 +1,14 @@
+---
+title: "previousProject"
+author: "Cande Torres"
+date: "10/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Here are some of my previous projects.
+
+[Statistical Machine Learning Project](project/project-work.html)

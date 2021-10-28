@@ -1,0 +1,21 @@
+navbar: 
+  title: Cande
+  left:
+  - text: Previous Projects
+    href: previous_project.html
+  - text: Project Idea
+    href: ProjectIdea.html
+  - text: TidyTuesday
+    menu: 
+    - text: TidyTuesday2
+      href: TidyTuesday2.html
+    - text: TidyTuesday3
+      href: TidyTuesday3.html
+    - text: TidyTuesday4
+      href: TidyTuesday4.html
+    - text: TidyTuesday5
+      href: TidyTuesday5.html
+output: html_document
+
+
+    

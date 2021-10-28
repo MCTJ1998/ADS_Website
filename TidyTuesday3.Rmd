@@ -1,0 +1,67 @@
+---
+title: "TidyTuesday3"
+author: "Cande Torres"
+date: "10/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(tidytuesdayR)
+library(ggplot2)
+library(devtools) 
+library(openintro)
+library(ggthemes)
+library(gplots) 
+library(janitor)
+library(RColorBrewer) 
+library(ggmosaic) #NEW! Enhanced barplot
+library(gridExtra) 
+library(ggridges) 
+```
+
+
+## Registered Nurses 
+
+```{r cars, message=FALSE, warning=FALSE}
+nurses <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-05/nurses.csv')
+```
+# Heat Map
+
+```{r}
+nurses <- nurses %>% clean_names()
+```
+
+```{r}
+nur_long <-
+  nurses %>% 
+  filter(year==2020) %>%
+  mutate_if(is.numeric, scale) %>% 
+  select(state,total_employed_rn, annual_salary_avg, hourly_wage_median, yearly_total_employed_state_aggregate) %>% 
+  pivot_longer(cols = !state, 
+               names_to = 'variables', 
+               values_to = 'values')
+```
+
+```{r,fig.height=8, fig.width=10}
+nur_long %>% 
+  ggplot(aes(x = variables, y = fct_reorder(state, values, mean))) +
+  geom_tile(aes(fill = values)) +
+  scale_fill_gradient2() +
+  theme_minimal() +
+  ylab("State")
+```
+This heatmap shows 4 variables in their scaled form, for each state. Each variable (column) is scaled to indicate states (rows) with high values (Purple) to low values (red/pink). This allows the audience to scan across rows & across columns to visually assess which states & variables are related, respectively. 
+
+I filtered the information for only the year of 2020 because due to the pandemic, the highering and the salary of nurses went up significantly in the US in general, but I wanted to compare each indeividual State. The variables I chose to show the variation were Average Annual Salary, the Median Hourly Wage, Total number of new Nurses employed and the Aggregate of total nurses employed yearly. 
+
+The heatmap shows that in general, the states that hired the most also paid the most to nurses in 2020, which are located at the top, with New York leading the map. It is super interesting to analyze what patterns emerge thorugh the graphing of this data. 
+
+
+Link to Data: https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-10-05
