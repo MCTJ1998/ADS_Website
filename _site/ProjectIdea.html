@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Project Idea</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Cande</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="previous_project.html">Previous Projects</a>
+</li>
+<li>
+  <a href="ProjectIdea.html">Project Idea</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    TidyTuesday
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="TidyTuesday2.html">TidyTuesday2</a>
+    </li>
+    <li>
+      <a href="TidyTuesday3.html">TidyTuesday3</a>
+    </li>
+    <li>
+      <a href="TidyTuesday4.html">TidyTuesday4</a>
+    </li>
+    <li>
+      <a href="TidyTuesday5.html">TidyTuesday5</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Project Idea</h1>
+
+</div>
+
+
+<div id="global-competition-education-policies-in-latin-americas-southern-cone-previous-during-and-after-the-pandemic" class="section level1">
+<h1>Global Competition: Education Policies in Latin America’s Southern Cone previous, during and after the Pandemic</h1>
+<ol style="list-style-type: decimal">
+<li><p>Abstract</p>
+<pre><code>     This thesis addresses the following primary question: What role does global competitiveness take on education public policies for states? Global competition has happened across many areas in history, but in the last two decades it has shaped education policies across the world. Focusing on Latin American countries, this thesis seeks to understand the implementation of successful education policies in the region through the lens of global competition. The main hypothesis explores the connection between globally competitive educational systems and access to Information Communication Technologies before, during and after the pandemic. Considering that the pandemic has caused a disruption in education in Latin America of immeasurable losses, I explore how different states and regions handled contingency plans and to what extent the degree of  importance they rendered to education reveals patterns of global positioning and the desire for status in the “knowledge economy” system. </code></pre></li>
+<li><p>Introduction</p>
+<pre><code>     According to the former Russian president Dmitry Medvedev, “Human capital is becoming the main area of global competition, and it is the most important and, at the same time, the most dynamic facet of modern industry. This form of competition will become severe due to a clear realization that has appeared in the world: leading positions are going to be occupied by countries that are attractive to educated and energetic people” (Medvedev, 2015). Since the beginning of the new millennium, we can identify a global trend of states focusing investments of resources and attention on the improvement of their educational systems as a way to acquire international recognition. The World Economic Forum defines competitiveness as “the set of institutions, policies and factors that determine the level of productivity of a country” and is closely tied to education because human capital increases productivity. Competitiveness of a country directly correlates with the level of the life standards reached (Yildiri Keser, H. 2015). At the same time, productivity has been linked with economic development and higher welfare. 
+     Then, there are major incentives for countries to pursue “world-class” education and recognition for high quality human capital. In the framework of “knowledge-economy” it is vital for nations to position themselves in a competitive place because it may have benefits to industry promotion and economic standards. Global Competitiveness is measured by different organisms in different ways but academically speaking, the World Economic Forum Global Competitiveness Index has been accepted as it encompasses data for a wider number of economies compared to other rankings. Three of the 12 pillars to measure Global Competitiveness are related to education (secondary, tertiary and vocational), thus it reveals the importance it takes in worldwide standing. Technological infrastructure lies as another requirement of a global competitive country which has proven to enhance development in all other areas, particularly in education. But, how does a country become more competitive in terms of human capital? I believe a large part of the answer lies in the foundational infrastructure for Information Communication Technologies (ICTs) in the education system. 
+     Incorporating ICTs has become a key priority in the education sector. These technologies can contribute to universal access to education, equality in instruction, quality in teaching and learning and the professional development of teachers, as well as to more efficient management and administration of education systems. Thus, they are essential to achieving more egalitarian societies (UNESCO, 2014). The repercussions of such understanding made developing countries especially eager to incorporate ICTs to their systems, a trend particularly visible in the public policies incorporated in Latin America (SITEAL 2014). For that reason, the focus of this thesis explores public policy across Latin America that seeks to guarantee access to ICTs as a way to advance education. In the International Development field, ICTs are praised for contributing to improving financial systems, public health, trade and connectivity. The COVID-19 Pandemic and the remote education practices has revealed that there is an underestimated potential for ICTs to improve educational attainment as a means for economic development that has been neglected in developing nations.  I want to explore policies that seek to make ICTs accessible across students, and additionally investigate whether they helped in facing the pandemic and enhancing the recovery from it. </code></pre></li>
+<li><p>Hypothesis</p>
+<pre><code>The degree of attention states paid to education during the pandemic was greatly determined by the upholding of their global position and perception on that area. </code></pre></li>
+<li><p>Methodology and Data</p>
+<pre><code>     Drawing on scholarship on global competition, ICTs and education, as well as public policy, my focus on the Southern Cone narrows the scope of the project. In the same way, the timeframe of my research deals with events and trends pre- and post pandemic which means it encompasses the period between  2000 until 2020. 
+     To test the Hypothesis, I use large-N data to conduct a multivariate regression where the dependent variable is the level of prioritization to education during the pandemic and the main independent variable is global positioning on education. The units of analysis are states (available in the data set) randomly selected to control for confounders such as level of ICT acquisition, number of contagions, quality of public health system, etc. Both the dependent and independent variables are constructed as indices obtained from different sources. On one hand, the DV measuring the level of prioritization to education could be constructed utilizing data collected on education policies enacted on the states randomly selected. On the other hand, the main independent variable on global positioning could be constructed upon the state&#39;s position on different global rankings (see section on Data). Regardless of the current discussion concerning the validity of the PISA tests among other international measures of learning achievement, it is undeniable that the result achieved in these classifications construct the international perception of every state in matters of education. I propose that the higher the global status of a state in education, the more prone it is to prioritize education public policy to maintain it. 
+     Data to construct the multivariate regression comes from the following sources: the Oxford COVID-19 Government Response Tracker, the UNESCO Monitoring of School Closures Caused by COVID-19, the Rapid situation tracking for COVID-19 socioeconomic impacts (UNICEF), the World Talent Ranking (International Institute for Management Development), the Best Education Ranking (U.S News and World Report) and the results on the latest PISA tests (OECD). Other variables controlling for the public health system, access to ICT, level of contagion, etc, are to be identified from sources such as the World Bank database. </code></pre></li>
+<li><p>Limitations and Challenges</p>
+<pre><code>     I acknowledge the difficulty of analyzing recent events such as the education disruption during the pandemic. The uncertain nature of current times make prediction extremely difficult as events and situations are rapidly changing, sometimes for the best and sometimes for the worst. The consequences of decisions taken by heads of states and leaders during the pandemic will be identifiable in the long term, and attempting to evaluate them in the present seems counterintuitive. Yet, it is both intriguing and salient to do so because it may help understand the situation in a much clearer way. Another limitation lies on the veracity of the sources. During these times, information is not scarce. However, the availability of information makes it harder to distinguish untruthful sources. Plus, as I mentioned before, the constantly changing numbers and direction of decisions makes it hard to manage the most updated information. I will do my best to do so. To solve this issue, I might decide to ignore events after an arbitrary date such as June 2021. 
+     It is worth noticing that both small-N methods and large-N methods have their limitations. On one side, for small-N studies like the comparison of states on pandemic management, tend to be intensive rather than extensive and therefore too limited to conduct statistical analysis. Plus, extrapolating results or generalizing findings might be counterproductive and misleading. The fact that the cases are not randomly selected but hand-picked for comparison may also represent a limitation. Simply put, “the selection of cases in the absence of any rules of inquiry can lead to insecure inferences, limited findings, and, in some cases, simply incorrect conclusions about a particular topic.” (Landman, 2008). On the other side, large-N methods present limitations as they are time consuming and often require computationally expensive methods. Data availability certainly is a drawback and I have already prepared myself to make changes in the random selection of states where the data are not available for those chosen. However, I believe that the benefits of incorporating quantitative methods to my thesis outweigh the costs. </code></pre></li>
+</ol>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
