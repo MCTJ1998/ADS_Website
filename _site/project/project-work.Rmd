@@ -1,0 +1,721 @@
+---
+title: "Statistical Machine Learning application to Education in Argentina "
+author: "Cande Torres and Kashvi Ajitsaria"
+date: "5/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(caret)
+library(rpart.plot)
+library(randomForest)
+```
+
+```{r message=FALSE}
+library(ISLR)
+library(tidyverse)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(carData)
+library(class)
+library(devtools)
+library(gam)
+library(glmnet)
+library(leaps)
+library(methods)
+library(openxlsx)
+library(scales)
+library(splines)
+library(stats)
+library(caret)
+library(broom)
+```
+
+# Data
+
+Our data is from Argentina’s national ‘Permanent Household Survey’, which is collected by the National Institute of Statistics and Censuses on a 3-month basis for a subset of the larger population. Each one of the cases in our final clean dataset represents the profile of an individual included in Argentina’s national household survey, wherein we have information relating to their demographic status, access to information and communication technology, household situation, and educational attainment. This information is made tangible through 5 key variables - __ICT_access_index__: which encompasses data about household computers, cell phones and internet access and usage; __Educational Attainment__: which describes the difference in educational status between 2019 and 2020 in the form of a binary variable where 1 describes educational progress; __Income Individual__: which represents the amount of money earned through labor each month; __Type of school__: which represents whether education was through a public or private institution; and __Aglomerado__: which represents the region of Argentine the individual is from. We have 6 additional variables documenting individuals’ sex, marriage status, access to individual room at home, access to study room, highest level of education and age.
+
+
+```{r message=TRUE, warning=FALSE}
+data2019 <- read_csv("/Users/cande/Desktop/SPRING 2021/Module 4/STATS-253/project/Data/STATS_project_data2019.csv")
+```
+
+```{r message=FALSE}
+# Remove the variables we don't want
+data2019 <- data2019 %>%
+    select(-ANO4, -TRIMESTRE,-COMPONENTE,-CODUSU,-NRO_HOGAR,-Birth_Loc_Specific, -Location_5y_Specific,-Read_write_recode,-Schooling_recode,-NIVEL_ED_recoded,-ESTADO,-CAT_INAC,-Income_job,-Income_scholarship, -Income_no_work, -IPCF,-NIVEL_ED,-Schooling,-Read_write)
+```
+
+```{r message=FALSE}
+#Recode Vars taken as integer as categorical
+data2019$CAT_OCUP <- as.factor(data2019$CAT_OCUP)
+data2019$Sex <- as.factor(data2019$Sex)
+data2019$REGION <- as.factor(data2019$REGION)
+data2019$Relative_Rel <- as.factor(data2019$Relative_Rel)
+data2019$Civil_State <- as.factor(data2019$Civil_State)
+#data2019$Schooling <- as.factor(data2019$Schooling)
+#data2019$NIVEL_ED <- as.factor(data2019$NIVEL_ED)
+data2019$Highest_level <- as.factor(data2019$Highest_level)
+data2019$Type_of_school <- as.factor(data2019$Type_of_school)
+data2019$`finished?` <- as.factor(data2019$`finished?`)
+data2019$Birth_Location <- as.factor(data2019$Birth_Location)
+data2019$Ownership <- as.factor(data2019$Ownership)
+data2019$House_Type <- as.factor(data2019$House_Type)
+data2019$Studio <- as.factor(data2019$Studio)
+data2019$IH_II_01 <- as.factor(data2019$IH_II_01)
+data2019$IH_II_02 <- as.factor(data2019$IH_II_02)
+data2019$IP_III_04 <- as.factor(data2019$IP_III_04)
+data2019$IP_III_05 <- as.factor(data2019$IP_III_05)
+data2019$IP_III_06 <- as.factor(data2019$IP_III_06)
+```
+
+```{r message=FALSE}
+# Rename column where names is code
+names(data2019)[names(data2019) == "IH_II_01"] <- "Computer_house"
+names(data2019)[names(data2019) == "IH_II_02"] <- "Internet_house"
+names(data2019)[names(data2019) == "IP_III_04"] <- "Internet_use"
+names(data2019)[names(data2019) == "IP_III_05"] <- "Computer_use"
+names(data2019)[names(data2019) == "IP_III_06"] <- "Cellphone_use"
+```
+
+
+```{r}
+head(data2019)
+```
+
+__Goal and Research Questions__
+
+Our analysis goal for this project is to predict income of individuals in Argentina, as well as the extent of educational disruption during the COVID-19 pandemic, based on different factors such as region of origin, sex and access to information and communication technologies (ICTs). 
+
+In the __regression section__, we explore: Which variables help us predict an Argentinian person’s income, measured in pesos?
+In the __classification section__, we explore: Which variables help us predict whether an individual’s education was disrupted or not during the COVID-19 pandemic, where educational attainment is measured in 0 = no progress and 1 = made progress?
+
+## Initial investigation 1: ignoring nonlinearity (for now)
+
+Use ordinary least squares (OLS) regression, forward and/or backward selection, and LASSO to build initial models for your quantitative outcome as a function of the predictors of interest. (As part of data cleaning, exclude any variables that you don't want to consider as predictors.)
+
+- These models should not include any transformations to deal with nonlinearity. You'll explore this in the next investigation.
+- Note: If you have highly collinear/redundant variables, you might see the message "Reordering variables and trying again" and associated `warning()`s about linear dependencies being found. Sometimes stepwise selection is able to handle the collinearity/redundancy by modifying the order of the variables tried. If collinearity/redundancy cannot be handled and causes an error, try reducing `nvmax`.
+
+# Introduction
+
+For the regression analysis, we used the Backward stepwise selection and LASSO regression with splines to evaluate non-linear relationships between variables, which we complemented by fitting GAMs. We evaluated these models by computing the root-mean squared error (RMSE), as well as looking at the model’s variable importance measures and simplicity.
+
+__Note__:
+It is noteworthy the fact that we started fitting the models with individual's income as outcome variable in the natural scale. Only when we got to the residuals plot we realized we needed to log transform the variable to account for non-continuous distribution of residuals or heteroskedasticity. We log transformed the variable and re-traced the process but for the sake of interpretability, we are stiking with the natural scale for now. 
+
+__OLS__
+
+**Note** : We kept the original OLS models to compare residual plots bellow
+```{r}
+mod1 <- lm(Income_individual ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+ Age, data = data2019)
+summary(mod1)
+```
+```{r warning=FALSE}
+mod1_output <- broom::augment(mod1, newdata = data2019)
+head(mod1_output)
+```
+
+```{r warning=FALSE}
+set.seed(253)
+
+mod1_cv <- train(
+    Income_individual ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+ Age,
+    data= data2019,
+    method= "lm",
+    trControl= trainControl(method="cv", number = 10),  
+    na.action = na.omit
+)
+```
+
+```{r warning=FALSE}
+summary(mod1_cv)
+```
+
+
+___Subset Selection: Backward stepwise selection___
+
+```{r warning=FALSE}
+set.seed(25)
+
+back_step_mod <- train(
+    Income_individual~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+Age,
+    data = data2019,
+    method = "leapBackward",
+    tuneGrid = data.frame(nvmax = 1:10),
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+summary(back_step_mod)
+```
+
+```{r}
+coef(back_step_mod$finalModel, id = back_step_mod$bestTune$nvmax)
+```
+
+__LASSO__
+
+*Note to self*: You can also look at the two forms of penalized models with this tuneGrid: ridge regression and lasso regression. alpha = 0 is pure ridge regression, and alpha = 1 is pure lasso regression. You can fit a mixture of the two models (i.e. an elastic net) using an alpha between 0 and 1. For example, alpha = 0.05 would be 95% ridge regression and 5% lasso regression.
+*Note to self*: According to the internet, the sequence is the amount of lambda values we explore, starting from a particular number, finishing in a different one. The jumps/steps (amount of models we fit) is defined by length.out and it usually jumps with multiples of 10. 
+
+```{r}
+set.seed(253)
+lasso_mod<- train(
+    Income_individual ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+Age,
+    data = data2019,
+    method = "glmnet",
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    tuneGrid = data.frame(alpha = 1, lambda = seq(0,1000, length.out = 100)),
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+# Examine
+
+```{r}
+# Plot coefficient paths as a function of lambda
+plot(lasso_mod$finalModel, xvar = "lambda", label = TRUE, col = rainbow(20))
+```
+
+```{r}
+# Codebook for which variables the numbers correspond to
+rownames(lasso_mod$finalModel$beta)
+```
+
+
+**Interpretation OLS**:
+- The average value of Individual Income when all the predictors are set to 0 corresponds to the intercept ARG$8056.2.
+- Then, we can say that for one unit increase in the the Literacy index we associate an increase of ARG$1514.6 in individual's income, holding all other predictors constant.
+Interpretation for Stepwise Selection:
+- The best model choosen with oneSE is the one with 7 predictors. In the one stage, the predictor remaining is CAT_OCUP3, which corresponds to the category employee/worker. Whether a person belongs or not to that category seems to impact their income greatly, which makes sense. The second most important predictor seems to be Age. The third is Literacy, as I suspected, and the fourth is CAT_OCUP1 which signals whether a person has a leadership role in their job or not. Additionally, the model picked up Highest_level8 as the fifth predictor, which corresponds to having attended to Graduate School (Masters, MBA, PhD). In general for backward step-wise selection, variables removed first could be viewed as the least important predictors, and variable that remain until the end could be viewed as the most important predictors.
+Interpretation for Lasso: From just examining the plot above we can see that some of the 
+Estimate test performance of the models from these different methods. Report and interpret (with units) these estimates along with a measure of uncertainty in the estimate (SD is most readily available from `caret`).
+
+- Compare estimated test performance across methods. Which method(s) might you prefer?
+
+__Trainnig Metrics For OLS__ 
+
+```{r}
+mean(abs(mod1_output$.resid),na.rm=TRUE)
+mean(mod1_output$.resid^2,na.rm=TRUE)
+```
+
+__Test metrics for OLS__
+
+```{r}
+mod1_cv$results
+```
+
+
+__Test Metrics for Stepwise Selection__
+
+```{r}
+# Look at accuracy/error metrics for the different subset sizes
+# If you want to sort the table of results, use arrange() from dplyr
+back_step_mod$results %>% arrange(MAE)
+```
+
+```{r}
+# What tuning parameter gave the best performance?
+# i.e. What subset size gave the best model?
+back_step_mod$bestTune
+```
+
+```{r}
+# Obtain the coefficients for the best model
+coef(back_step_mod$finalModel, id = back_step_mod$bestTune$nvmax)
+```
+
+```{r}
+# Plot metrics for each model in the sequence
+plot(back_step_mod)
+```
+
+__Test Metrics for LASSO__
+
+```{r}
+lasso_mod$results %>% arrange(MAE) %>% 
+  head(10)
+```
+```{r}
+# Identify which tuning parameter (lambda) is "best"
+lasso_mod$bestTune %>% 
+  head(10)
+```
+
+```{r}
+#Same thing coded differently, we look at the coefficients for the best lambda model
+#coef(lasso_mod_log$finalModel, 747)
+coef(lasso_mod$finalModel, lasso_mod$bestTune$lambda)
+```
+
+```{r}
+# Plot a summary of the performance of the different models
+plot(lasso_mod)
+```
+
+**How do the error metrics compare?** 
+*OLS*: The MAE for the 10-variable OLS is 10812.28.This means that on average this OLS model is off in its percentage predictions about a person's income by about 10812 pesos. The RMSE for OLS is 21094.89, this is the lowest of the three. 
+
+*Step-wise*: The MAE for the 10-variable step-wise model is 11042.38. This means that on average this OLS model is off in its percentage predictions about a person's income by about 11042.38 pesos. The RMSE of the best tune model for backward step selection (7) offers an RMSE of 21373.63
+
+*Lasso*:
+Based on the information in `lasso_mod$results`, we can see that the lowest estimated test MAE (10734.64) shows up for lambda = 353.5. However, the algorithm decided to set the "best" $\lambda = 747$ model with a MAE of 10777.50 pesos. This means that on average this LASSO model is off in its percentage predictions about a person's income by about 10778 pesos. The RMSE for the model built with the best lambda is 21231.22
+
+Use residual plots to evaluate whether some quantitative predictors might be better modeled with nonlinear relationships.
+
+```{r warning=FALSE}
+ggplot(mod1_output, aes(x = .fitted, y = .resid)) +
+    geom_point() +
+    geom_smooth() +
+    geom_hline(yintercept = 0, color = "red")
+
+# Residuals vs. Literacy index
+ggplot(mod1_output, aes(x = Literacy_Index, y = .resid)) +
+    geom_point() +
+    geom_smooth() +
+    geom_hline(yintercept = 0, color = "red")
+# Residuals vs. Age
+ggplot(mod1_output, aes(x = Age, y = .resid)) +
+    geom_point() +
+    geom_smooth() +
+    geom_hline(yintercept = 0, color = "red")
+```
+Considering the data used only has 2 quantitative predictors, our plots show the residuals vs. the Literacy_Index and Age predictors. The Age distributions look okay, but the Literacy index may indicate the need for a log transform because the distribution of the residuals towards the right seems to hit at heteroskedasticity. We should log transform the outcome Individual Income to see how that affects all our investigation, not only the plot It is worth noticing that even when Literacy is numerical, it does have a delimited set of values, which is depicted in the plot as the vertical columns of residuals. Even when no transformation seems necessary, the warning sign mentions the use of the gam method to plot it which is a good sign that we might want to try non-linear investigations. 
+\\
+
+```{r}
+Data2019 <- data2019 %>% mutate(log_income = log(Income_individual+1))
+```
+
+```{r}
+data_new <- Data2019                                     # Duplicate data
+data_new[is.na(data_new) | data_new == "Inf"] <- NA # Replace NaN & Inf with NA
+data_new[is.na(data_new) | data_new == "NaN"] <- NA
+```
+
+```{r warning=FALSE}
+data_new<-data_new %>% 
+  filter(!is.na(log_income))
+```
+
+```{r warning=FALSE}
+mod1_log <- lm(log_income ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+Age,data = data_new, na.action = na.omit)
+summary(mod1_log)
+```
+
+```{r warning=FALSE}
+mod1_log_output <- broom::augment(mod1_log, newdata = data_new)
+head(mod1_log_output)
+```
+
+```{r warning=FALSE}
+# Residuals vs. Literacy index
+ggplot(mod1_log_output, aes(x = Literacy_Index, y = .resid)) +
+    geom_point() +
+    geom_smooth() +
+    geom_hline(yintercept = 0, color = "red")
+```
+
+  The log transformation helped to fix the non-constant distribution of residuals but there is a trade-off on interpretability. We are staying with natural scales in investigation #1.
+
+Compare insights from variable importance analyses from the different methods (stepwise and LASSO, but not OLS). Are there variables for which the methods reach consensus? What insights are expected? Surprising?
+
+- Note that if some (but not all) of the indicator terms for a categorical predictor are selected in the final models, the whole predictor should be treated as selected.
+
+__LASSO__
+
+```{r}
+# Create a boolean matrix (predictors x lambdas) of variable exclusion
+bool_predictor_exclude <- lasso_mod$finalModel$beta==0
+
+# Loop over each variable
+var_imp <- sapply(seq_len(nrow(bool_predictor_exclude)), function(row) {
+    # Extract coefficient path (sorted from highest to lowest lambda)
+    this_coeff_path <- bool_predictor_exclude[row,]
+    # Compute and return the # of lambdas until this variable is out forever
+    ncol(bool_predictor_exclude)-which.min(this_coeff_path)+1
+})
+
+# Create a dataset of this information and sort
+var_imp_data <- tibble(
+    var_name = rownames(bool_predictor_exclude),
+    var_imp = var_imp
+)
+var_imp_data %>% arrange(desc(var_imp))
+```
+
+\
+In this case, the more persistent variables for LASSO are the same selected in backward stepwise selection except for the most persistent predictor for this model, which seems to be the Cellphone_use9 variable, which is not very relevant considering that it is NA's for "Use of cellphone in the last three months". It is a bit surprising considering we always talk about how backward and forward subset selection may not arrive to the same "best" model because they don't compute all the possibilities but generally they do their job.  Leaving aside the Cellphone_use9, from the analysis we can see that Lasso method does coincide that the most important predictors are CAT_OCUP3, which corresponds to the category employee/worker, Civil_State5, which corresponds to being single and the Literacy index. Additionally we see the lasso model picked up Highest_level8, which corresponds to having attended to Graduate School (Masters, MBA, PhD), in the same way subset selection did.
+
+## Investigation 2: Accounting for nonlinearity
+
+Update your stepwise selection model(s) and LASSO model to use natural splines for the quantitative predictors.
+
+- You'll need to update the model formula from `y ~ .` to something like `y ~ cat_var1 + ns(quant_var1, df) + ...`.
+- It's recommended to use few knots (e.g., 2 knots = 3 degrees of freedom).
+- Note that `ns(x,3)` replaces `x` with 3 transformations of `x`. Keep this in mind when setting `nvmax` in stepwise selection.
+
+__Stepwise__
+
+```{r warning=FALSE}
+set.seed(253)
+
+spline_back_step_mod2 <- train(
+    Income_individual~ ns(Literacy_Index,3)+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+ns(Age,3),
+    data = data2019,
+    method = "leapBackward",
+    tuneGrid = data.frame(nvmax = 1:14), #nvmax=number or vars.
+    trControl = trainControl(method = "cv", number = 10),
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+summary(spline_back_step_mod2)
+```
+
+```{r}
+# Look at accuracy/error metrics for the different subset sizes
+# If you want to sort the table of results, use arrange() from dplyr
+spline_back_step_mod2$results %>% arrange(MAE)
+spline_back_step_mod2$bestTune
+```
+
+```{r}
+# Obtain the coefficients for the best model
+coef(spline_back_step_mod2$finalModel, id = spline_back_step_mod2$bestTune$nvmax)
+```
+
+__LASSO__
+```{r}
+set.seed(253)
+spline_lasso_mod2 <- train(
+    Income_individual ~ ns(Literacy_Index,3)+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use+ns(Age,3),
+    data = data2019,
+    method = "glmnet",
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    tuneGrid = data.frame(alpha = 1, lambda = seq(0,1000, length.out = 100)),#Ask Leslie about length.out
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+# Identify which tuning parameter (lambda) is "best"
+spline_lasso_mod2$bestTune
+coef(spline_lasso_mod2$finalModel, lasso_mod$bestTune$lambda)
+```
+```{r}
+spline_lasso_mod2$results
+```
+
+```{r}
+# Create a boolean matrix (predictors x lambdas) of variable exclusion
+bool_predictor_exclude <- spline_lasso_mod2$finalModel$beta==0
+
+# Loop over each variable
+var_imp <- sapply(seq_len(nrow(bool_predictor_exclude)), function(row) {
+    # Extract coefficient path (sorted from highest to lowest lambda)
+    this_coeff_path <- bool_predictor_exclude[row,]
+    # Compute and return the # of lambdas until this variable is out forever
+    ncol(bool_predictor_exclude)-which.min(this_coeff_path)+1
+})
+
+# Create a dataset of this information and sort
+var_imp_data <- tibble(
+    var_name = rownames(bool_predictor_exclude),
+    var_imp = var_imp
+)
+var_imp_data %>% arrange(desc(var_imp))
+```
+Compare insights from variable importance analyses here and the corresponding results from Investigation 1. Now after having accounted for nonlinearity, have the most relevant predictors changed?
+
+- Note that if some (but not all) of the spline terms are selected in the final models, the whole predictor should be treated as selected.
+
+
+Using splines transformations for quantitative variables showed us that they remain among the most important predictors when we account for non-linearity in both methods. When one transformation is selected, it accounts for the importance of the whole variable. We can further the exploration using the GAMs
+\\
+
+Fit a GAM using LOESS terms using the set of variables deemed to be most relevant based on your investigations so far.
+
+```{r warning=FALSE}
+set.seed(253)
+gam_mod <- train(
+    Income_individual ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use
+    +Internet_use+Computer_use+Age,
+    data = data2019,
+    method = "gamLoess",
+    tuneGrid = data.frame(degree = 1, span = seq(0.1, 0.9, by = 0.1)),
+    trControl = trainControl(method = "cv", number = 8, selectionFunction = "best"),
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+plot(gam_mod)
+```
+```{r}
+gam_mod$bestTune
+```
+```{r}
+gam_mod$results %>%
+    filter(span==gam_mod$bestTune$span)
+```
+
+```{r}
+par(mfrow = c(3,4)) # Sets up a grid of plots
+plot(gam_mod$finalModel, se = TRUE) # Dashed lines are +/- 2 SEs
+```
+
+**How does test performance of the GAM compare to other models you explored?**
+
+The MAE of the GAM is 10891.92. This means that on average this  model is off in its percentage predictions about a person's income by about 10892 pesos.
+
+The Root Mean Square Error (RMSE) is the standard deviation of the residuals (prediction errors).
+The RMSE for the Lasso with spline models coming from the best lambda is 21211.01
+The RMSE for the Backwards selection model considered the best,  is 21165.22
+The RMSE for the best model coming from GAMs method shows as 21320.16
+This means that the method giving the smallest RMSE is the backwards selection model. GAMs yield the largest RMSE of all. 
+
+**Do we gain any insights from the GAM output plots for each predictor?**
+
+Since most of the variables are categorical (indicator) variables, we observe linear plots. We can see that among individuals that are same in all other characteristics, those of Sex2 (female) and Civil_State5 (single) have lower average income than others. On the other hand, among individuals that are same in all other characteristics, those of CAT_OCUP 2&3(self employed and worker/employee) and Birth_Location 2&3 (in a county other than the one currently living or in a provice other than the one currently living in) have higher average income than others.
+\\
+
+
+## Summarize investigations
+
+Decide on an overall best model based on your investigations so far. To do this, make clear your analysis goals. Predictive accuracy? Interpretability? A combination of both?
+
+Our analysis goal is to accurately predict the income of individuals based on different factors, which we believe will ultimately help us predict their digital access and consequent level of education disruption during COVID. Of course, we are hoping that these predicts will be interpretable as well. The overall best model so far for this is the Lasso, which had a MAE of 10777, the lowest so far.
+
+
+\\
+
+## Societal impact
+
+Are there any harms that may come from your analyses and/or how the data were collected? What cautions do you want to keep in mind when communicating your work?
+
+It is important that we communicate our analyses in a nuanced and non-exaggerated way, based on the relatively significant level of error we have faced so far. If not, this could misguide development programs working in education and digital access. This particular set of analyses, which focuses on income as an outcome of interest, has to effectively address intersectionality and the connection between different social dynamics, in order to ensure holistic development efforts, which do not discriminate against a certain group of people based on pre-existing conditions. If educational and digital access related programmes are not carried out effectively - based on solid evidence - then they could impact the learning, growth and consequently life of many people, causing more harm than good. Thus, it is important to exercise the utmost caution to ensure accuracy and mindfulness of analyses. 
+
+\\\\
+
+# Classification Analysis 
+
+_Classification Question__: How does access to ICT impacted educational attainment in Argentina in 2020?
+_Output Variable__: Educational Attainment
+
+Our goal will be to use people's characteristics to predict whether or not they achieved progress on their education during 2020.
+
+For the classification analysis, we used logistic regression with LASSO and random forests/bagging. We evaluated these models by computing their overall accuracy, as well as looking at variable importance measures.
+
+__Logistic Regression__
+
+```{r}
+newdataEduAtt <- read.csv("~/Desktop/SPRING 2021/Module 4/STATS-253/project/Data/STATS_project_newdataEduAtt.csv")
+```
+
+```{r}
+names(newdataEduAtt)
+```
+
+# Recode vars as factors
+```{r}
+newdataEduAtt$EduAtt<-as.factor(newdataEduAtt$EduAtt)
+newdataEduAtt$Relative_Rel<-as.factor(newdataEduAtt$Relative_Rel)
+newdataEduAtt$AGLOMERADO<-as.factor(newdataEduAtt$AGLOMERADO)
+newdataEduAtt$Studio<-as.factor(newdataEduAtt$Studio)
+newdataEduAtt$Sex<-as.factor(newdataEduAtt$Sex)
+newdataEduAtt$Civil_State<-as.factor(newdataEduAtt$Civil_State)
+newdataEduAtt$Type_of_school<-as.factor(newdataEduAtt$Type_of_school)
+newdataEduAtt$Highest_level.x<-as.factor(newdataEduAtt$Highest_level.x)
+newdataEduAtt$Highest_level.y<-as.factor(newdataEduAtt$Highest_level.y)
+```
+
+## LASSO LOG
+
+Our goal will be to use people's characteristics to predict whether or not they achieved progress on their education during 2020.
+
+```{r}
+twoClassSummaryCustom <- function (data, lev = NULL, model = NULL) {
+    if (length(lev) > 2) {
+        stop(paste("Your outcome has", length(lev), "levels. The twoClassSummary() function isn't appropriate."))
+    }
+    caret:::requireNamespaceQuietStop("pROC")
+    if (!all(levels(data[, "pred"]) == lev)) {
+        stop("levels of observed and predicted data do not match")
+    }
+    rocObject <- try(pROC::roc(data$obs, data[, lev[1]], direction = ">", 
+        quiet = TRUE), silent = TRUE)
+    rocAUC <- if (inherits(rocObject, "try-error")) 
+        NA
+    else rocObject$auc
+    out <- c(rocAUC, sensitivity(data[, "pred"], data[, "obs"], 
+        lev[1]), specificity(data[, "pred"], data[, "obs"], lev[2]))
+    out2 <- postResample(data[, "pred"], data[, "obs"])
+    out <- c(out, out2[1])
+    names(out) <- c("AUC", "Sens", "Spec", "Accuracy")
+    out
+}
+```
+
+```{r warning=FALSE}
+set.seed(148)
+lasso_logistic_mod <- train(
+    EduAtt~ ICT_access_Index +AGLOMERADO+Sex+Type_of_school+Income_individual+Studio+Age20,
+    data = newdataEduAtt,
+    method = "glmnet",
+    family = "binomial",
+    tuneGrid = data.frame(alpha = 1, lambda = seq(0, 1, length.out = 100)),
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    metric = "Accuracy",
+    na.action = na.omit
+)
+plot(lasso_logistic_mod)
+```
+
+## Variable importance
+
+```{r}
+# Create a boolean matrix (predictors x lambdas) of variable exclusion
+bool_predictor_exclude <- lasso_logistic_mod$finalModel$beta==0
+
+# Loop over each variable
+var_imp <- sapply(seq_len(nrow(bool_predictor_exclude)), function(row) {
+    # Extract coefficient path (sorted from highest to lowest lambda)
+    this_coeff_path <- bool_predictor_exclude[row,]
+    # Compute and return the # of lambdas until this variable is out forever
+    ncol(bool_predictor_exclude)-which.min(this_coeff_path)+1
+})
+
+# Create a dataset of this information and sort
+var_imp_data <- tibble(
+    var_name = rownames(bool_predictor_exclude),
+    var_imp = var_imp
+)
+var_imp_data %>% arrange(desc(var_imp))
+```
+
+## Evaluate Models
+
+```{r}
+# CV results for "best lambda"
+lasso_logistic_mod$results %>%
+    filter(lambda==lasso_logistic_mod$bestTune$lambda)
+
+# Count up number of spam and not_spam emails in the training data
+newdataEduAtt %>%
+    count(EduAtt) # Name of the outcome variable goes inside count()
+# Compute the No Information Rate
+1239/(1239+932) #This is the relative frequency of the majority class in the outcome variable over all cases.
+```
+
+For a lambda at 0.05 considered best by the algorithm, we obtain an accuracy of 62% with this method. Considering that the NIR is 57% this method is not as accurate predicting educational attainment on this data set because just guessing the majority class we would be correct 57% of the times.
+
+```{r warning=FALSE}
+lasso_logistic_mod$resample
+```
+
+# Random Forest for Classification 
+
+## Building the random forest
+
+```{r}
+set.seed(253)
+rf_mod <- train(
+    EduAtt ~ ICT_access_Index+AGLOMERADO+Sex+Type_of_school+Income_individual+Studio+Age20,
+    data = newdataEduAtt,
+    method = "rf",
+    tuneGrid = data.frame(mtry = c(2, 3, 4)),
+    trControl = trainControl(method = "oob", selectionFunction = "best"),
+    metric = "Accuracy",
+    ntree = 1000, # To force fitting 1000 trees (can help with stability of results)
+    na.action = na.omit
+)
+```
+
+## Preliminary interpretation
+
+```{r}
+plot(rf_mod)
+```
+```{r}
+rf_mod$results
+```
+
+## Evaluating the forest
+
+```{r}
+rf_mod$finalModel
+```
+
+## Variable Importance Measures
+
+```{r}
+var_imp_rf <- randomForest::importance(rf_mod$finalModel)
+
+# Sort by importance with dplyr's arrange()
+var_imp_rf <- data.frame(
+        predictor = rownames(var_imp_rf),
+        MeanDecreaseGini = var_imp_rf[,"MeanDecreaseGini"]
+    ) %>%
+    arrange(desc(MeanDecreaseGini))
+
+# Top 20
+head(var_imp_rf, 20)
+```
+ICT access seems to be the 4th most significant predictor for educational attainment in 2020 
+
+## Classification analysis - Results - Variable Importance 
+Summarize results about variable importance measures in your classification analysis.
+
+*For the lasso logistic method, variable importance analysis showed Aglomerado30 (belonging to the region coded as 30, which is Santa Rosa in La Pampa province), Type of school (public) and the age of the person in 2020 and Aglomerado15 (belonging to the region of Great Formosa) as the most important variables. 
+*For the random forest method, variable importance analysis show that the age a person was on 2020, the individual's income, the type of school of that person being public (Type_of_school1) and the Access to ICTs that person had, are the most important predictors determining whether or not that person achieved educational attainment. 
+
+It makes sense that Age is consider as one of the most important predictors because younger people that are still in primary or secondary school are more likely to have their educational attainment than adults or senior citizens that are done studying. It also makes sense that income determines whether a person achieved educational attainment because a person with higher salary may have less time to study and focus on school work. Attending to public school is also a large determinant on educational attainment which makes sense given the disparity in education quality between public and private schools. Surprisingly, belonging to Santa Rosa, La Pampa is also a large determinant of education attainment, which might be an irregularity of the data set because in context, it does not offer any insight. In contrary, belonging to Formosa was also a large determinant, which makes more sense giving the regional results of the PISA test in 2018, qualifying Formosa as one of the three provinces with worse results in education for Argentina. 
+
+In the light of this analysis, the variables highlighted as important by the Random Forests methods provides more insight in the context of the data. 
+
+## Classification analysis - Summary 
+*Compare the 2 different classification models tried in light of evaluation metrics, variable importance, and data context.
+
+In terms of accuracy, the lasso model gives a 62%  and a Accuracy SD of 0.018% while the random forest method a 64% overall accuracy. Considering the NIR of 57% for Educational attainment, non of the methods seems to be completely efficient at class predictions but the Random Forest performs a little bit better than the lasso regression when the maximum number of random predictors considered at each split is 3. 
+
+The OOB error estimate for random forests are 35.8% which is quite large in the context of the data because miss-predicting educational attainment for almost 36% of cases is not an efficient model and we don not consider this an acceptable amount of error. 
+
+In terms of the strength and weaknesses of the random forest method, we can use the confusion matrix to calculate the following:
+
+```{r}
+#Sensitivity
+455/(301+455)
+#Specificity 
+935/(474+935)
+#Overall Accuracy 
+(455+935)/(455+301+474+935)
+```
+
+Specificity seems to be the area where the random forest model performs the best with 66% and yet it is still a low percentage in the context. Additionally, a specificity of 60% is not sufficient either. 
+
+## Decide an overall most preferable model.
+
+If we were to choose a model after the comparison of both of them we would chose the Random forest model because it offers a (slightly) better accuracy measure and because the variables hinted as important in this method seems to offer more insight understanding the data classification in context than the ones chosen in the lasso log model. 
+
