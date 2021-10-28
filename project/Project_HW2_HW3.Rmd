@@ -1,0 +1,352 @@
+---
+title: "Project HW2&HW3"
+author: "Cande Torres"
+date: "4/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+------------------------------------------------------------------------------
+#HW2 Begins 
+
+##Initial investigation
+
+```{r}
+library(ISLR)
+library(tidyverse)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(carData)
+library(class)
+library(devtools)
+library(gam)
+library(glmnet)
+library(leaps)
+library(methods)
+library(openxlsx)
+library(scales)
+library(splines)
+library(stats)
+library(caret)
+library(broom)
+```
+
+```{r}
+library(readxl)
+data2019 <- read_excel("/Users/cande/Desktop/SPRING 2021/Module 4/STATS-253/project/Data/STATS_project_data2019.xlsx")
+View(data2019)
+```
+
+
+OLS model
+```{r}
+# Remove the variables we don't want
+data2019 <- data2019 %>%
+    select(-ANO4, -TRIMESTRE,-COMPONENTE,-CODUSU,-NRO_HOGAR,-Birth_Loc_Specific, -Location_5y_Specific,-Read_write_recode,-Schooling_recode,-NIVEL_ED_recoded,-ESTADO,-CAT_INAC,-Income_job,-Income_scholarship, -Income_no_work, -IPCF,-NIVEL_ED,-Schooling,-Read_write)
+```
+
+```{r}
+#Recode Vars taken as integer as categorical
+data2019$CAT_OCUP <- as.factor(data2019$CAT_OCUP)
+data2019$Sex <- as.factor(data2019$Sex)
+data2019$REGION <- as.factor(data2019$REGION)
+data2019$Relative_Rel <- as.factor(data2019$Relative_Rel)
+data2019$Civil_State <- as.factor(data2019$Civil_State)
+#data2019$Schooling <- as.factor(data2019$Schooling)
+#data2019$NIVEL_ED <- as.factor(data2019$NIVEL_ED)
+data2019$Highest_level <- as.factor(data2019$Highest_level)
+data2019$Type_of_school <- as.factor(data2019$Type_of_school)
+data2019$`finished?` <- as.factor(data2019$`finished?`)
+data2019$Birth_Location <- as.factor(data2019$Birth_Location)
+data2019$Ownership <- as.factor(data2019$Ownership)
+data2019$House_Type <- as.factor(data2019$House_Type)
+data2019$Studio <- as.factor(data2019$Studio)
+data2019$IH_II_01 <- as.factor(data2019$IH_II_01)
+data2019$IH_II_02 <- as.factor(data2019$IH_II_02)
+data2019$IP_III_04 <- as.factor(data2019$IP_III_04)
+data2019$IP_III_05 <- as.factor(data2019$IP_III_05)
+data2019$IP_III_06 <- as.factor(data2019$IP_III_06)
+```
+
+```{r}
+# Rename column where names is code
+names(data2019)[names(data2019) == "IH_II_01"] <- "Computer_house"
+names(data2019)[names(data2019) == "IH_II_02"] <- "Internet_house"
+names(data2019)[names(data2019) == "IP_III_04"] <- "Internet_use"
+names(data2019)[names(data2019) == "IP_III_05"] <- "Computer_use"
+names(data2019)[names(data2019) == "IP_III_06"] <- "Cellphone_use"
+```
+
+
+```{r}
+# Scatterplot of Literacy vs. Individual income
+ggplot(data2019, aes(x=Literacy_Index, y=Income_individual)) +
+    geom_point()+
+    geom_smooth()
+```
+
+From the plot it seems we will need to scale or log 
+
+__Fitting a simple OLS model__
+
+Because Literacy Index was showing as an NA in the summary model, I removed the variables used to create the index from the model. 
+```{r}
+mod0 <- lm(Income_individual ~ . , data = data2019)
+summary(mod0)
+```
+
+```{r}
+mod1 <- lm(Income_individual ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use, data = data2019)
+summary(mod1)
+```
+
+```{r}
+mod1_output <- broom::augment(mod1, newdata = data2019)
+head(mod1_output)
+```
+#Fix this, she cares about the MAESD column, she mentioned to use $results not residuals??
+
+```{r}
+# MSE 
+mean(mod1_output$.resid^2)
+
+# RMSE 
+mean(mod1_output$.resid^2) %>% sqrt()
+
+# MAE 
+mean(abs(mod1_output$.resid))
+
+# R-squared (unit-less)
+1 - (var(mod1_output$.resid) / var(mod1_output$Income_individual))
+```
+
+Interpretation OLS:
+-The average value of Individual Income when all the predictors are set to 0 corresponds to the intercept ARG$8056.2.
+-Then, we can say that for one unit increase in the the Literacy index we associate an increase of ARG$1514.6 in individual's income, holding all other predictors constant.
+
+___Subset Selection: Backward stepwise selection___
+
+```{r}
+set.seed(253)
+
+back_step_mod <- train(
+    Income_individual~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use,
+    data = data2019,
+    method = "leapBackward",
+    tuneGrid = data.frame(nvmax = 1:9),
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+summary(back_step_mod)
+```
+In the one stage, the predictor remaining is CAT_OCUP3, which corresponds to the category employee/worker. Whether a person belongs or not to that category seems to impact their income greatly, which makes sense. The second most important predictor seems to be Civil_State5, which corresponds to being single. Whether a person is single or not seems to impact their income greatly, which is something unexpected. The third is Literacy, as I suspected, and the fourth is Highest_level8, which corresponds to having attended to Graduate School (Masters, MBA, PhD).
+In general for backward step-wise selection, variables removed first could be viewed as the least important predictors, and variable that remain until the end could be viewed as the most important predictors.
+
+```{r}
+# Plot metrics for each model in the sequence
+plot(back_step_mod)
+```
+
+->Why do I get such a big MAE? Is it measuring error in pesos? If so the error estimates are pretty large for this model. 
+```{r}
+# Look at accuracy/error metrics for the different subset sizes
+# If you want to sort the table of results, use arrange() from dplyr
+back_step_mod$results %>% arrange(MAE)
+```
+
+```{r}
+# What tuning parameter gave the best performance?
+# i.e. What subset size gave the best model?
+back_step_mod$bestTune
+```
+
+```{r}
+# Obtain the coefficients for the best model
+coef(back_step_mod$finalModel, id = back_step_mod$bestTune$nvmax)
+```
+
+__LASSO__
+
+Note to self: You can also look at the two forms of penalized models with this tuneGrid: ridge regression and lasso regression. alpha = 0 is pure ridge regression, and alpha = 1 is pure lasso regression. You can fit a mixture of the two models (i.e. an elastic net) using an alpha between 0 and 1. For example, alpha = 0.05 would be 95% ridge regression and 5% lasso regression.
+
+```{r}
+set.seed(253)
+lasso_mod <- train(
+    Income_individual ~ Literacy_Index+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use,
+    data = data2019,
+    method = "glmnet",
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    tuneGrid = data.frame(alpha = 1, lambda = seq(0,1000, length.out = 100)),#Ask Leslie about length.out
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+*Note to self: According to the internet, the sequence is the amount of lambda values we explore, starting from a particular number, finishing in a different one. The jumps/steps (amount of models we fit) is defined by length.out and it usually jumps with multiples of 10. 
+
+##Examine
+
+```{r}
+# Plot coefficient paths as a function of lambda
+plot(lasso_mod$finalModel, xvar = "lambda", label = TRUE, col = rainbow(20))
+```
+
+```{r}
+# Codebook for which variables the numbers correspond to
+rownames(lasso_mod$finalModel$beta)
+```
+
+```{r}
+# Zoom in
+plot(lasso_mod$finalModel, xvar = "lambda", label = TRUE, col = rainbow(20), ylim = c(-1000,1000))
+```
+```{r}
+coef(lasso_mod$finalModel, id = lasso_mod$bestTune$nvmax)
+```
+
+```{r}
+# Identify which tuning parameter (lambda) is "best"
+lasso_mod$bestTune
+```
+
+```{r}
+#Same thing coded differently, we look at the coefficients for the best lambda model
+coef(lasso_mod$finalModel, 424)
+coef(lasso_mod$finalModel, lasso_mod$bestTune$lambda)
+```
+
+the selectionFunction of "oneSE" means that we’re aiming to pick the simplest model (least predictors) whose test error estimate is within one standard error of the lowest test error.
+
+```{r}
+# Plot a summary of the performance of the different models
+plot(lasso_mod)
+```
+
+This plot is just to get a sense for how test error changes with the tuning parameter. But this visual inspection isn’t how we pick the best value of lambda. We can look at lasso_mod$results  and see which value of lambda was “best” (according to our selectionFunction) or we can let caret do that for us - it reports this in lasso_mod$bestTune.
+
+```{r}
+# Create a boolean matrix (predictors x lambdas) of variable exclusion
+bool_predictor_exclude <- lasso_mod$finalModel$beta==0
+
+# Loop over each variable
+var_imp <- sapply(seq_len(nrow(bool_predictor_exclude)), function(row) {
+    # Extract coefficient path (sorted from highest to lowest lambda)
+    this_coeff_path <- bool_predictor_exclude[row,]
+    # Compute and return the # of lambdas until this variable is out forever
+    ncol(bool_predictor_exclude)-which.min(this_coeff_path)+1
+})
+
+# Create a dataset of this information and sort
+var_imp_data <- tibble(
+    var_name = rownames(bool_predictor_exclude),
+    var_imp = var_imp
+)
+var_imp_data %>% arrange(desc(var_imp))
+```
+
+Compare estimated test performance across methods. Which method(s) might you prefer?
+
+#Discuss with Kashvi 
+I personally prefer the Lasso because MAE is lower 
+
+#Consistenly measuring metric error as "oneSE" 
+Estimated MAE for backwards stepwise selection = 11319.64 pesos for a 9 predictor model
+Estimated MAE for LASSO= around 11090 pesos 
+
+Use residual plots to evaluate whether some quantitative predictors might be better modeled with nonlinear relationships.
+
+Compare insights from variable importance analyses from the different methods (stepwise and LASSO, but not OLS). Are there variables for which the methods reach consensus? What insights are expected? Surprising?
+In this case, the more persistent variables for LASSO are the same selected in backward stepwise selection. It is a bit surprising considering we always talk about how backward and forward subset selection may not arrive to the same "best" model because they don't compute all the possibilities but generally they do their job.  Leaving aside the CAT_OCUP9, which corresponds to NAs, from the analysis we can see that Lasso method does coincide that the most important predictors are CAT_OCUP3, which corresponds to the category employee/worker, Civil_State5, which corresponds to being single and the Literacy index. Additionally we see the lasso model picked up Highest_level8, which corresponds to having attended to Graduate School (Masters, MBA, PhD), in the same way subset selection did. 
+
+
+__Accounting for nonlinearity__
+Update your stepwise selection model(s) and LASSO model to use natural splines for the quantitative predictors.
+You’ll need to update the model formula from y ~ . to something like y ~ cat_var1 + ns(quant_var1, df) + ....
+It’s recommended to use few knots (e.g., 2 knots = 3 degrees of freedom).
+Note that ns(x,3) replaces x with 3 transformations of x. Keep this in mind when setting nvmax in stepwise selection.
+
+```{r}
+set.seed(253)
+
+spline_back_step_mod2 <- train(
+    Income_individual~ ns(Literacy_Index,3)+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use,
+    data = data2019,
+    method = "leapBackward",
+    tuneGrid = data.frame(nvmax = 1:11), #nvmax=number or vars.
+    trControl = trainControl(method = "cv", number = 10),
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+set.seed(253)
+spline_lasso_mod2 <- train(
+    Income_individual ~ ns(Literacy_Index,3)+Sex+Birth_Location+CAT_OCUP+Civil_State+Highest_level+Cellphone_use+Internet_use+ Computer_use,
+    data = data2019,
+    method = "glmnet",
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"),
+    tuneGrid = data.frame(alpha = 1, lambda = seq(0,10, length.out = 1000)),#Ask Leslie about length.out
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+*Compare insights from variable importance analyses here and the corresponding results from Investigation 1. Now after having accounted for non-linearity, have the most relevant predictors changed?
+Note that if some (but not all) of the spline terms are selected in the final models, the whole predictor should be treated as selected.
+
+*Fit a GAM using LOESS terms using the set of variables deemed to be most relevant based on your investigations so far.
+
+-How does test performance of the GAM compare to other models you explored?
+
+Don’t worry about KNN for now.
+
+```{r warning=FALSE}
+set.seed(100)
+gam_mod <- train(
+    Income_individual ~ #most important variables defined before,
+    data = data2019,
+    method = "gamLoess",
+    tuneGrid = data.frame(degree = 1, span = seq(0.1, 0.9, by = 0.1)),
+    trControl = trainControl(method = "cv", number = 10, selectionFunction = "oneSE"), #10-folds seems appropiate
+    metric = "MAE",
+    na.action = na.omit
+)
+```
+
+```{r}
+# Plot CV-estimated test performance versus the tuning parameter
+plot(gam_mod)
+```
+
+**Interpretation:** It looks like a span of "the lowest point of the plot, defined by x-coordenate"  (x% of the data used in each local fit) resulted in the GAM with the overall lowest test error (y-coordenate): on average the GAM is off in the prediction of graduation rate by about y-coordenate percentage points. Is it high or low?. Perhaps with some additional investigations we could have chosen a better set of variables to include.
+
+```{r}
+# Identify which tuning parameter is "best"
+gam_mod$bestTune
+
+# CV metrics for each model
+gam_mod$results
+
+# CV metrics for just the "best" model
+gam_mod$results %>%
+    filter(span==gam_mod$bestTune$span)
+```
+
+-Do you gain any insights from the GAM output plots for each predictor?
+--> look for non-linearity
+```{r}
+#We can plot the function for each predictor as below.
+par(mfrow = c(3,4)) # Sets up a grid of plots
+plot(gam_mod$finalModel, se = TRUE) # Dashed lines are +/- 2 SEs
+```
