@@ -5,8 +5,12 @@ navbar:
     href: previous_project.html
   - text: Project Idea
     href: ProjectIdea.html
+  - text: Shiny App
+    href: shiny_app_for_site.html
   - text: TidyTuesday
     menu: 
+    - text: TidyTuesday1
+      href: TidyTuesday1.html
     - text: TidyTuesday2
       href: TidyTuesday2.html
     - text: TidyTuesday3
