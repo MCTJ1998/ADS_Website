@@ -1,0 +1,83 @@
+---
+title: "TidyTuesday1"
+author: "Cande Torres"
+date: "9/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = TRUE)
+```
+
+```{r message=TRUE}
+library(maps) 
+library(ggmap)
+library(gplots) #new
+library(RColorBrewer)
+library(tidyverse)
+library(tidytuesdayR)
+library(dplyr)
+library(jsonlite)
+library(leaflet)
+library(httr)
+library(ggthemes)
+library(sf)
+```
+
+```{r warning=FALSE}
+driver_standings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-07/driver_standings.csv')
+```
+```{r message=TRUE, warning=FALSE}
+races <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-07/races.csv')
+```
+
+```{r message=TRUE}
+drivers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-07/drivers.csv')
+```
+
+```{r message=FALSE}
+#download.file(
+ # "http://ergast.com/downloads/f1db_ansi.sql.gz", 
+  #destfile = "f1db-mysql.zip"
+#)
+```
+
+```{r message=TRUE}
+#Creat a more comprehensive data set
+driver_results_df <- driver_standings %>% 
+  left_join(races, by = "raceId") %>% 
+  rename(driver_url = url) %>% 
+  left_join(drivers, by = "driverId")
+  
+glimpse(driver_results_df)
+```
+
+```{r message=TRUE}
+#Filter the data to only encompass the top 10 nationalities with more races won from 1950 to 2021.
+driver_wins <- driver_results_df %>%
+  group_by(nationality) %>% 
+  summarise(total_wins = sum(wins)) %>% 
+  arrange(desc(total_wins)) %>% 
+  head(10)
+```
+
+```{r message=TRUE}
+# generate labels for plot
+lbl <- paste0(driver_wins$total_wins, "races")
+driver_wins <- driver_wins %>% mutate(label = lbl)
+```
+
+```{r message=TRUE}
+#Plot nationality by number of races won, add labels and color. 
+driver_wins %>% 
+  ggplot(aes(x=nationality,
+             y=total_wins))+ 
+  geom_col(fill="red")+
+  theme_minimal() +
+  labs(y="Number of Races won", x="Driver's nationality", title="Top-10 Nationalities of Race-Winners")+
+  geom_text(aes(y = total_wins, label = label), vjust = -0.5)
+```
+This bar plot shows the top 10 nationalities of winners of Formula 1 races and the number of races won by each of them. I decided to plot it because in some countries races are really popular sports and a source of quality entertainment with many followers. Knowing the amount of races won by drivers of ones country appeals to national sentiment and pride. In the future, a good investigation would be to find the amount of supporters in each country to see if there is a correlation between number of national supporters and the number of wins achieved by drivers of that nationality. 
+
+Link to Data: https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-09-07/readme.md
+

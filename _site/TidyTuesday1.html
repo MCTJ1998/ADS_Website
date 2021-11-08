@@ -11,9 +11,8 @@
 
 <meta name="author" content="Cande Torres" />
 
-<meta name="date" content="2021-10-26" />
 
-<title>TidyTuesday5</title>
+<title>TidyTuesday1</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -288,57 +287,131 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">TidyTuesday5</h1>
+<h1 class="title toc-ignore">TidyTuesday1</h1>
 <h4 class="author">Cande Torres</h4>
-<h4 class="date">10/26/2021</h4>
+<h4 class="date">9/7/2021</h4>
 
 </div>
 
 
-<pre class="r"><code>library(tidyverse)
-library(ggplot2)
-library(dplyr)
-library(brew)
-library(lubridate)</code></pre>
+<pre class="r"><code>library(maps) 
+library(ggmap)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Google&#39;s Terms of Service: https://cloud.google.com/maps-platform/terms/.</code></pre>
+<pre><code>## Please cite ggmap if you use it! See citation(&quot;ggmap&quot;) for details.</code></pre>
+<pre class="r"><code>library(gplots) #new</code></pre>
 <pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
 ## 
-##     date, intersect, setdiff, union</code></pre>
-<pre class="r"><code>ultra_rankings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/ultra_rankings.csv&#39;)</code></pre>
-<pre><code>## Rows: 137803 Columns: 8</code></pre>
+##     lowess</code></pre>
+<pre class="r"><code>library(RColorBrewer)
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>## ✓ tibble  3.1.5     ✓ dplyr   1.0.7
+## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
+## ✓ readr   2.0.1     ✓ forcats 0.5.1
+## ✓ purrr   0.3.4</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+## x purrr::map()    masks maps::map()</code></pre>
+<pre class="r"><code>library(tidytuesdayR)
+library(dplyr)
+library(jsonlite)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;jsonlite&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     flatten</code></pre>
+<pre class="r"><code>library(leaflet)
+library(httr)
+library(ggthemes)
+library(sf)</code></pre>
+<pre><code>## Linking to GEOS 3.8.1, GDAL 3.2.1, PROJ 7.2.1</code></pre>
+<pre class="r"><code>driver_standings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-07/driver_standings.csv&#39;)</code></pre>
+<pre><code>## Rows: 33206 Columns: 7</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
-## chr (4): runner, time, gender, nationality
-## dbl (4): race_year_id, rank, age, time_in_seconds</code></pre>
+## chr (1): positionText
+## dbl (6): driverStandingsId, raceId, driverId, points, position, wins</code></pre>
 <pre><code>## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>race &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/race.csv&#39;)</code></pre>
-<pre><code>## Rows: 1207 Columns: 13</code></pre>
+<pre class="r"><code>races &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-07/races.csv&#39;)</code></pre>
+<pre><code>## Rows: 1058 Columns: 8</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
-## chr  (5): event, race, city, country, participation
-## dbl  (6): race_year_id, distance, elevation_gain, elevation_loss, aid_statio...
-## date (1): date
-## time (1): start_time</code></pre>
+## chr  (3): name, time, url
+## dbl  (4): raceId, year, round, circuitId
+## date (1): date</code></pre>
 <pre><code>## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>u_rank&lt;-ultra_rankings %&gt;% 
-  filter(race_year_id== 54013) %&gt;% 
-  filter(!is.na(gender)) %&gt;% 
-  mutate(time_h=time_in_seconds/3600) %&gt;% 
-  mutate(kph=33.3/time_h) %&gt;% 
-  group_by(age, gender) %&gt;% 
-  summarize(mean_kph= mean(kph)) </code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;age&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>u_rank %&gt;% 
-  ggplot(aes(x=age, y= mean_kph, color=fct_rev(gender)))+ 
-  geom_line()+
-  labs(x= &quot;Age&quot;, y= &quot;Average Speed on kph&quot;, title = &quot;Average Speed by Age depending on Gender during SPARNATRAIL 2019&quot;, color=&quot;Gender&quot;)</code></pre>
-<p><img src="TidyTuesday5_files/figure-html/unnamed-chunk-3-1.png" width="672" /> This graph shows the average speed that runners displayed depending on their age and gender during the Sparnat Trail Race 2019 in France. The graph reveals that in general, at all ages males ran faster than females, except for age 36-38 when females are faster than males. This seems to be the age when women are the fastest in general. For males, the peak occurs at 30 years old. Additionally, the graph shows that man continue running past 65 years old, the age when women stop competing.</p>
-<p>Link to data: <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-10-26/readme.md" class="uri">https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-10-26/readme.md</a></p>
+<pre class="r"><code>drivers &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-07/drivers.csv&#39;)</code></pre>
+<pre><code>## Rows: 853 Columns: 9</code></pre>
+<pre><code>## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (7): driverRef, number, code, forename, surname, nationality, url
+## dbl  (1): driverId
+## date (1): dob</code></pre>
+<pre><code>## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>#download.file(
+ # &quot;http://ergast.com/downloads/f1db_ansi.sql.gz&quot;, 
+  #destfile = &quot;f1db-mysql.zip&quot;
+#)</code></pre>
+<pre class="r"><code>#Creat a more comprehensive data set
+driver_results_df &lt;- driver_standings %&gt;% 
+  left_join(races, by = &quot;raceId&quot;) %&gt;% 
+  rename(driver_url = url) %&gt;% 
+  left_join(drivers, by = &quot;driverId&quot;)
+  
+glimpse(driver_results_df)</code></pre>
+<pre><code>## Rows: 33,206
+## Columns: 22
+## $ driverStandingsId &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1…
+## $ raceId            &lt;dbl&gt; 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, …
+## $ driverId          &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1…
+## $ points            &lt;dbl&gt; 10, 8, 6, 5, 4, 3, 2, 1, 14, 11, 6, 6, 10, 3, 2, 11,…
+## $ position          &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 1, 3, 6, 7, 4, 9, 10, 2, 5, …
+## $ positionText      &lt;chr&gt; &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;1&quot;, &quot;3&quot;, &quot;6…
+## $ wins              &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0…
+## $ year              &lt;dbl&gt; 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008…
+## $ round             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2…
+## $ circuitId         &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2…
+## $ name              &lt;chr&gt; &quot;Australian Grand Prix&quot;, &quot;Australian Grand Prix&quot;, &quot;A…
+## $ date              &lt;date&gt; 2008-03-16, 2008-03-16, 2008-03-16, 2008-03-16, 200…
+## $ time              &lt;chr&gt; &quot;04:30:00&quot;, &quot;04:30:00&quot;, &quot;04:30:00&quot;, &quot;04:30:00&quot;, &quot;04:…
+## $ driver_url        &lt;chr&gt; &quot;http://en.wikipedia.org/wiki/2008_Australian_Grand_…
+## $ driverRef         &lt;chr&gt; &quot;hamilton&quot;, &quot;heidfeld&quot;, &quot;rosberg&quot;, &quot;alonso&quot;, &quot;kovala…
+## $ number            &lt;chr&gt; &quot;44&quot;, &quot;\\N&quot;, &quot;6&quot;, &quot;14&quot;, &quot;\\N&quot;, &quot;\\N&quot;, &quot;\\N&quot;, &quot;7&quot;, &quot;4…
+## $ code              &lt;chr&gt; &quot;HAM&quot;, &quot;HEI&quot;, &quot;ROS&quot;, &quot;ALO&quot;, &quot;KOV&quot;, &quot;NAK&quot;, &quot;BOU&quot;, &quot;RA…
+## $ forename          &lt;chr&gt; &quot;Lewis&quot;, &quot;Nick&quot;, &quot;Nico&quot;, &quot;Fernando&quot;, &quot;Heikki&quot;, &quot;Kazu…
+## $ surname           &lt;chr&gt; &quot;Hamilton&quot;, &quot;Heidfeld&quot;, &quot;Rosberg&quot;, &quot;Alonso&quot;, &quot;Kovala…
+## $ dob               &lt;date&gt; 1985-01-07, 1977-05-10, 1985-06-27, 1981-07-29, 198…
+## $ nationality       &lt;chr&gt; &quot;British&quot;, &quot;German&quot;, &quot;German&quot;, &quot;Spanish&quot;, &quot;Finnish&quot;,…
+## $ url               &lt;chr&gt; &quot;http://en.wikipedia.org/wiki/Lewis_Hamilton&quot;, &quot;http…</code></pre>
+<pre class="r"><code>#Filter the data to only encompass the top 10 nationalities with more races won from 1950 to 2021.
+driver_wins &lt;- driver_results_df %&gt;%
+  group_by(nationality) %&gt;% 
+  summarise(total_wins = sum(wins)) %&gt;% 
+  arrange(desc(total_wins)) %&gt;% 
+  head(10)</code></pre>
+<pre class="r"><code># generate labels for plot
+lbl &lt;- paste0(driver_wins$total_wins, &quot;races&quot;)
+driver_wins &lt;- driver_wins %&gt;% mutate(label = lbl)</code></pre>
+<pre class="r"><code>#Plot nationality by number of races won, add labels and color. 
+driver_wins %&gt;% 
+  ggplot(aes(x=nationality,
+             y=total_wins))+ 
+  geom_col(fill=&quot;red&quot;)+
+  theme_minimal() +
+  labs(y=&quot;Number of Races won&quot;, x=&quot;Driver&#39;s nationality&quot;, title=&quot;Top-10 Nationalities of Race-Winners&quot;)+
+  geom_text(aes(y = total_wins, label = label), vjust = -0.5)</code></pre>
+<p><img src="TidyTuesday1_files/figure-html/unnamed-chunk-9-1.png" width="672" /> This bar plot shows the top 10 nationalities of winners of Formula 1 races and the number of races won by each of them. I decided to plot it because in some countries races are really popular sports and a source of quality entertainment with many followers. Knowing the amount of races won by drivers of ones country appeals to national sentiment and pride. In the future, a good investigation would be to find the amount of supporters in each country to see if there is a correlation between number of national supporters and the number of wins achieved by drivers of that nationality.</p>
+<p>Link to Data: <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-09-07/readme.md" class="uri">https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-09-07/readme.md</a></p>
 
 
 
