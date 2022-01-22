@@ -9,10 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Here are some of my previous projects.
+This tab is meant as repository for my previous projects.
 
+## STAT-253
 [Statistical Machine Learning Project](project/project-work.html)
 Supervise Machine learning models including LASSO, Random Forest and GAMS.
 
-[Short List Shiny App](jayden-west.shinyapps.io/hw8-app/)
-Using data for small liberal art colleges in the US, me and my team coded an app that help high school students compare them to make their final choice. 
+## STAT-456
+[Function Friday](FunctionFriday.html)
+Presentation on Stringr package for string manipulation.

@@ -9,6 +9,17 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Shiny app for Assignment #4
+## Shiny app for College Comparison: Shortlist
+
+This app was the result of a collaborative project between my classmates Shannon Dohr, Jayden West and Kellie Stellmach for our COMP-112 final project. 
+
+The app works as a search engine designed to help prospective college students narrow down their search of liberal arts schools, as well as visualize college characteristics to compare how they differ among colleges across the United States.
+
+Link: https://jayden-west.shinyapps.io/hw8-app/
+
+## Shiny app for Assignment #4 for STAT-456
+
+In the context of the COVID-19 pandemic and it's effect on health care professionals well-being, Kashvi Ajitsaria and I coded a simple Shiny app to visualize Nurses' earnings over time in the United States.
 
 Link: https://cande-torres-jimenez.shinyapps.io/shiny_ADS/
+
