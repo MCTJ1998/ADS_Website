@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 <center>
-![Me](profesional.jpg){width=50%}
+![Me](tande.jpeg){width=50%}
 </center>
 
 # Goals for this Website
