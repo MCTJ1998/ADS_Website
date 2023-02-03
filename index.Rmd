@@ -17,17 +17,17 @@ knitr::opts_chunk$set(echo = TRUE)
 </center>
 
 # Goals for this Website
-- Present my CV for future employers
+- Present my CV to future employers
 - Present and organize previous work in portfolio style 
-- Facilitate collaboration among other students 
-- Practice Data Science and Coding skills. 
+- Facilitate collaboration  
+- Practice Data Science and Coding skills 
 
 # Education
 
 ## College 
 - Macalester College, St. Paul MN. U.S                  
-- GPA: 3.94                  
-- Bachelor of Arts Expected May 2022    
+- GPA: 3.91 Summa Cum Laude                  
+- Bachelor of Arts May 2022    
 
 #### Majors: 
 International Studies and Political Science. 
@@ -43,7 +43,7 @@ Theodore Mitau Grant Recipient Summer 2021. Kofi Annan scholarship awarded for h
 
 #### Coursework: 
 
-Intl. Codes of Conduct, Intro to Data Science, Empirical Research Methods, Statistical Modelling, Political Economy of Development, Core Concepts of Computer Science. 
+Intro to Data Science, Empirical Research Methods, Statistical Modelling, Political Economy of Development, Core Concepts of Computer Science, Advanced Data Science, Econometrics.
 
 ## Highschool 
 
@@ -54,7 +54,30 @@ Intl. Codes of Conduct, Intro to Data Science, Empirical Research Methods, Stati
 
 #  Relevant Experiences:
 
-__Preceptor, Macalester College. June 2021-Present.__
+__Consultant, C4ADS. Washington D.C.    October 2022-Present__
+
+State-sponsored Threats Team
+
+•	Support the North Korea and China portfolios collecting and structuring data regarding international networks involved in sanction evasion.
+•	Identify vessels involved in oil smuggling from North Korea with the use of geo-spatial tools and satellite software to build a robust database for the company. 
+•	Write analytical products to summarize findings from open-source investigation in Mandarin and English on entities suspected of illicit activity. 
+
+__Analyst Inter, C4ADS. Washington D.C. June 2022-August 2022__
+
+Human Security Team 
+
+•	Conducted data foraging, collection and detailed analysis to find evidence for investigation on transnational illicit networks emphasizing the role of China. 
+•	Utilized a wide range of softwares for data analysis and visualization as well as geo-special tools to enhance investigation.
+•	Produced a range of analytical products from public reports to private dossiers for a wide audience, including law enforcement, regulatory agencies, and multinational organizations.
+
+  
+__Precept Intro to Data Science course Macalester College, St. Paul, MN  December 2021-May 2022.__
+
+•	Assisted the faculty of the department with planning lectures and assisting to the class sessions. 
+•	Supported a cohort of 60 students by holding regular group tutoring sessions as well as one-on-one sessions. 
+•	Graded daily activities and exams to facilitate student’s improvement with frequent feedback.
+
+__Preceptor, Macalester College. June 2021-December 2021.__
 
   Precept First-year course Latin America Through Women’s Eyes.
   
@@ -69,6 +92,7 @@ __Research Assistant, University of Michigan. Remote. June 2021-August 2021.__
   -	Investigate and review articles and academic sources relevant to the topic. 
   -	Condense meaningful concepts and ideas from academic sources and translate it into 1Cademy platform.
   -	Present finding in a compelling and engaging way with the team during weekly meetings.                                          
+
 __Research Assistant, Minneapolis MN. U.S  January 2019-December 2020.__
 
   Research on African Party Activism for Professor Mueller’s book.    
@@ -126,13 +150,13 @@ __Languages__:
 - Latin: Knowledge sufficient to perform translations and for legal studies. 
 
 __Computer__:
-Microsoft and Google suite. Photo Shop and Movie Maker. R Studio for Data Science. Python. LaTeX software. 
+Microsoft and Google suite. Photo Shop and Movie Maker. R Studio for Data Science. Python. LaTeX software. QGIS. Tableau. Maxar. Sentinel Hub. Airbus.
 
 # Extra-curricular: 
 
-- Comunidades Latinas Unidas en Servicio (CLUES) Volunteer Spring - 2020-Present.
-- Instructor of Weight Lifting for Women of Color - Fall 2019-Present. 
-- Model United Nation - 2016-Present.
+- Comunidades Latinas Unidas en Servicio (CLUES) Volunteer Spring - 2020-May 22.
+- Instructor of Weight Lifting for Women of Color - Fall 2019-May 2022. 
+- Model United Nation - 2016-May 2022.
 - UWC Argentina National Committee Volunteer - 2016-Present.
 
 # Contact 
