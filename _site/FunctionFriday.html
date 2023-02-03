@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Cande, Sivhuo and Xuechen" />
+
+<meta name="date" content="2021-10-11" />
+
+<title>Function Friday</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Cande</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="previous_project.html">Previous Projects</a>
+</li>
+<li>
+  <a href="ProjectIdea.html">Project Idea</a>
+</li>
+<li>
+  <a href="shiny_app_for_site.html">Shiny App</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    TidyTuesday
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="TidyTuesday1.html">TidyTuesday1</a>
+    </li>
+    <li>
+      <a href="TidyTuesday2.html">TidyTuesday2</a>
+    </li>
+    <li>
+      <a href="TidyTuesday3.html">TidyTuesday3</a>
+    </li>
+    <li>
+      <a href="TidyTuesday4.html">TidyTuesday4</a>
+    </li>
+    <li>
+      <a href="TidyTuesday5.html">TidyTuesday5</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Function Friday</h1>
+<h4 class="author">Cande, Sivhuo and Xuechen</h4>
+<h4 class="date">10/11/2021</h4>
+
+</div>
+
+
+<pre class="r"><code>library(titanic)
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(kableExtra)</code></pre>
+<div id="stringr" class="section level1">
+<h1>Stringr</h1>
+<p>Stringr provides fast, correct implementations of common string manipulations.</p>
+<div id="titanic" class="section level2">
+<h2>Titanic</h2>
+<p>We are using the data from Titanic Train data!</p>
+<pre class="r"><code>titanic = titanic_train</code></pre>
+</div>
+<div id="str_count" class="section level2">
+<h2>str_count()</h2>
+<p>The first function we will introduce is from the Detect Matches family - str_count. str_count(x, pattern) counts the number of patterns.</p>
+<ul>
+<li>The first argument is the input vector</li>
+<li>The second argument is the pattern that we are looking to count</li>
+</ul>
+<pre class="r"><code>pattern_titanic &lt;- titanic %&gt;% 
+  mutate(Name_pattern=str_count(Name, &quot;[aeiou]&quot;)) %&gt;% 
+  arrange(desc(Name_pattern)) %&gt;% 
+  select(Name, Name_pattern) %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()
+
+pattern_titanic</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:right;">
+Name_pattern
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Penasco y Castellana, Mrs. Victor de Satode (Maria Josefa Perez de Soto y Vallejo)
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Laroche, Mrs. Joseph (Juliette Marie Louise Lafargue)
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Vander Planke, Mrs. Julius (Emelia Maria Vandemoortele)
+</td>
+<td style="text-align:right;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Phillips, Miss. Kate Florence (“Mrs Kate Louise Phillips Marshall”)
+</td>
+<td style="text-align:right;">
+18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Brown, Mrs. Thomas William Solomon (Elizabeth Catherine Ford)
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_locate" class="section level2">
+<h2>str_locate()</h2>
+<p>str_locate(x, pattern) gives the position of the match. First column gives start postion of match, and second column gives end position.</p>
+<ul>
+<li>The first argument is the input vector</li>
+<li>The second argument is the pattern that we want to figure out where the position is</li>
+</ul>
+<pre class="r"><code>locate_titanic &lt;- str_locate(titanic$Name, &quot;[aeiou]&quot;) %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()
+
+locate_titanic</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+start
+</th>
+<th style="text-align:right;">
+end
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_wrap" class="section level2">
+<h2>str_wrap()</h2>
+<p>str_wrap function wraps strings into nicely formatted paragraphs. Here is a Titanic fact and let’s experiment with it.</p>
+<ul>
+<li>The first argument is the input character vector of strings to reformat.</li>
+<li>Positive integer giving target line width in characters. A width less than or equal to 1 will put each word on its own line.</li>
+<li>exdent: non-negative integer giving indentation of following lines in each paragraph</li>
+</ul>
+<pre class="r"><code>x &lt;- &quot;The Titanic was a luxury British steamship that sank in the early hours of April 15, 1912 after striking an iceberg, leading to the deaths of more than 1,500 passengers and crew.&quot;
+cat(str_wrap(x, width = 0, exdent = 2), &quot;\n&quot;)</code></pre>
+<pre><code>## The
+##   Titanic
+##   was
+##   a
+##   luxury
+##   British
+##   steamship
+##   that
+##   sank
+##   in
+##   the
+##   early
+##   hours
+##   of
+##   April
+##   15,
+##   1912
+##   after
+##   striking
+##   an
+##   iceberg,
+##   leading
+##   to
+##   the
+##   deaths
+##   of
+##   more
+##   than
+##   1,500
+##   passengers
+##   and
+##   crew.</code></pre>
+<pre class="r"><code>cat(str_wrap(x), &quot;\n&quot;)</code></pre>
+<pre><code>## The Titanic was a luxury British steamship that sank in the early hours of April
+## 15, 1912 after striking an iceberg, leading to the deaths of more than 1,500
+## passengers and crew.</code></pre>
+</div>
+<div id="str_trim" class="section level2">
+<h2>str_trim()</h2>
+<p>This function is useful for trimming white spaces at the beginning and ending of a string.</p>
+<ul>
+<li>The first argument is the string vector</li>
+<li>The second argument refer to where is the white space that we want to remove (left, right or both)</li>
+</ul>
+<pre class="r"><code>ticket &lt;- &quot; C2004  &quot;
+str_trim(ticket, side= &#39;both&#39;)</code></pre>
+<pre><code>## [1] &quot;C2004&quot;</code></pre>
+</div>
+<div id="str_squish" class="section level2">
+<h2>str_squish()</h2>
+<p>We cannot remove whitespace in the middle by using str_trim() function. Thus, we have str_squish() that can remove whitespace from left and right sides of strings and collapses multiple spaces or space-like characters from the middle of the strings into a single space.</p>
+<p><strong>str_squish(string)</strong></p>
+<p>Arguments: * string: input vector.</p>
+<pre class="r"><code>rbind(
+  str_squish(&quot; a     bbbbb cccccc  d    &quot;),
+  str_squish(&quot;\n\nString \t\nwith all \tthis     \rspace   in it.\n\n&quot;)
+)</code></pre>
+<pre><code>##      [,1]                               
+## [1,] &quot;a bbbbb cccccc d&quot;                 
+## [2,] &quot;String with all this space in it.&quot;</code></pre>
+<p>We covered ‘str_sub()’ in intro to data Science, but there are other useful functions in stringr that are worth mentioning. The following functions work by mutating the data set so they require the mutate() function.</p>
+</div>
+<div id="str_replace-str_replace_all" class="section level2">
+<h2>str_replace() &amp; str_replace_all()</h2>
+<p>‘str_replace()’ extracts <strong>the first</strong> match pattern in the strings and replaces it. ‘str_replace_all()’ does the same with all the iterations of the pattern in the string.</p>
+<ul>
+<li>The first argument is the input vector</li>
+<li>The second argument is the pattern that we are looking to replace.</li>
+<li>The third argument is whatever we want to replace the pattern with.</li>
+</ul>
+<pre class="r"><code># put the original name and modified one side by side
+sp_titanic &lt;-titanic %&gt;% 
+  mutate(Name = str_replace(Name, &quot;Mrs.&quot;, &quot;Sra.&quot;),
+         Name = str_replace(Name, &quot;Mr.&quot;, &quot;Sr.&quot;),
+         Name = str_replace(Name, &quot;Miss.&quot;, &quot;Srta.&quot;))
+
+
+sp_titanic_name &lt;- sp_titanic %&gt;% 
+  select(Name, PassengerId)
+
+titanic_name &lt;- titanic %&gt;% 
+  select(Name, PassengerId)
+
+replace_data &lt;- sp_titanic_name %&gt;% 
+  full_join(titanic_name, by = &quot;PassengerId&quot;) %&gt;% 
+  select(Name.x, Name.y) %&gt;% 
+  as_tibble()
+  
+replace_data %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling() </code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name.x
+</th>
+<th style="text-align:left;">
+Name.y
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Sr. Owen Harris
+</td>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Sra. John Bradley (Florence Briggs Thayer)
+</td>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Srta. Laina
+</td>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Sra. Jacques Heath (Lily May Peel)
+</td>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, Sr. William Henry
+</td>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_remove" class="section level2">
+<h2>str_remove()</h2>
+<p>It works similarly to ‘str_replace()’ because it searches for a pattern in a string vector, but instead of replacing it, it removes it. You can also use ‘str_remove_all()’ when there is more than one iteration of the same pattern to be removed from the string.</p>
+<pre class="r"><code># put the original name and modified one side by side
+no_titles_TT&lt;-titanic %&gt;% 
+  mutate(Name = str_remove(Name, &quot;Mrs.&quot;),
+         Name = str_remove(Name, &quot;Mr.&quot;),
+         Name = str_remove(Name, &quot;Miss.&quot;))
+
+no_titles_TT_name &lt;- no_titles_TT %&gt;% 
+  select(Name, PassengerId)
+
+remove_data &lt;- no_titles_TT_name %&gt;% 
+  full_join(titanic_name, by = &quot;PassengerId&quot;) %&gt;% 
+  select(Name.x, Name.y) %&gt;% 
+  as_tibble()
+  
+remove_data %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name.x
+</th>
+<th style="text-align:left;">
+Name.y
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Owen Harris
+</td>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, John Bradley (Florence Briggs Thayer)
+</td>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Laina
+</td>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Jacques Heath (Lily May Peel)
+</td>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, William Henry
+</td>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_dup-str_unique" class="section level2">
+<h2>str_dup() &amp; str_unique()</h2>
+<p>‘str_dup()’ duplicates stings while ‘str_unique()’ removes all duplicates.</p>
+<ul>
+<li>The first argument is the input vector (the name of the column where you plan to extract the string)</li>
+<li>The second argument is the number of times you want to iterate.</li>
+</ul>
+<p>For ‘str_unique’ we only need the vector input.</p>
+<pre class="r"><code>titanic_2 &lt;-titanic%&gt;% 
+  mutate(double= str_dup(Sex, 2))
+
+titanic_2 %&gt;% 
+  select(Sex, double) %&gt;% 
+  as_tibble() %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Sex
+</th>
+<th style="text-align:left;">
+double
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+malemale
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:left;">
+femalefemale
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:left;">
+femalefemale
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:left;">
+femalefemale
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+malemale
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_glue-and-str_glue_data" class="section level2">
+<h2>str_glue() and str_glue_data()</h2>
+<p>These functions glue together separate string to make a sentence. * the first argument is the expression. The arguments we give are taken to be expressions string(s) to format. Multiple inputs are concatenated together before formatting. * The second argument is <strong>.sep</strong> or the separator used to separate elements. * The 3rd is <strong>.envir</strong> This is the environment to evaluate each expression in. Expressions are evaluated from left to right</p>
+<pre class="r"><code>glue_titanic &lt;- titanic %&gt;% 
+  mutate(story = str_glue(&quot;The Titanic&#39;s passenger called {name},&quot;,
+                          &quot; had a passenger class number {Pclass}&quot;,
+                          &quot; and was {age} years old&quot;,
+                           name= Name,
+                           Pclass = Pclass,
+                           age= Age)) %&gt;% 
+  select(Name, Pclass, Age, story) 
+  
+glue_titanic %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:right;">
+Pclass
+</th>
+<th style="text-align:right;">
+Age
+</th>
+<th style="text-align:left;">
+story
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+The Titanic’s passenger called Braund, Mr. Owen Harris, had a passenger class number 3 and was 22 years old
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+The Titanic’s passenger called Cumings, Mrs. John Bradley (Florence Briggs Thayer), had a passenger class number 1 and was 38 years old
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+The Titanic’s passenger called Heikkinen, Miss. Laina, had a passenger class number 3 and was 26 years old
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+The Titanic’s passenger called Futrelle, Mrs. Jacques Heath (Lily May Peel), had a passenger class number 1 and was 35 years old
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+The Titanic’s passenger called Allen, Mr. William Henry, had a passenger class number 3 and was 35 years old
+</td>
+</tr>
+</tbody>
+</table>
+<p>‘str_glue_data()’ works in a similar way when you want all the observations in each row presented in a sentence or string format. It is useful with data pipelines. Our data set would look confusing if we did this.</p>
+</div>
+<div id="str_subset" class="section level2">
+<h2>str_subset()</h2>
+<p>This function returns only the strings that contain a pattern match.</p>
+<p><strong>str_subset(string, pattern, negate = FALSE)</strong></p>
+<p>Arguments:</p>
+<ul>
+<li>string: input vector.</li>
+<li>pattern: pattern to look for.</li>
+<li>negate: if TRUE, return non-matching elements.</li>
+</ul>
+<pre class="r"><code>str_subset(titanic$Name, &quot;Mr.&quot;) %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Moran, Mr. James
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_subset(titanic$Name, &quot;Miss&quot;) %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sandstrom, Miss. Marguerite Rut
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bonnell, Miss. Elizabeth
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Vestrom, Miss. Hulda Amanda Adolfina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+McGowan, Miss. Anna “Annie”
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can also input regular expressions as the pattern to look for. For example, “^a” to find any string starting with an a.</p>
+<pre class="r"><code>str_subset(titanic$Name, &quot;^A&quot;) %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Andersson, Mr. Anders Johan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Asplund, Mrs. Carl Oscar (Selma Augusta Emilia Johansson)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ahlin, Mrs. Johan (Johanna Persdotter Larsson)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arnold-Franchi, Mrs. Josef (Josefine Franchi)
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Returns elements that do NOT match
+str_subset(titanic$Name, &quot;^A&quot;, negate=TRUE) %&gt;% 
+  head(5) %&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Moran, Mr. James
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_match" class="section level2">
+<h2>str_match()</h2>
+<p><strong>str_match(string, pattern)</strong></p>
+<p>Arguments:</p>
+<ul>
+<li>string: input vector.</li>
+<li>pattern: pattern to look for.</li>
+</ul>
+<pre class="r"><code>strings &lt;- c(&quot; 219 733 8965&quot;, &quot;329-293-8753 &quot;, &quot;banana&quot;, &quot;595 794 7569&quot;,
+  &quot;387 287 6718&quot;, &quot;apple&quot;, &quot;233.398.9187  &quot;, &quot;482 952 3315&quot;,
+  &quot;239 923 8115 and 842 566 4692&quot;, &quot;Work: 579-499-7527&quot;, &quot;$1000&quot;,
+  &quot;Home: 543.355.3679&quot;)
+phone &lt;- &quot;([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})&quot;
+
+str_match(strings, phone)</code></pre>
+<pre><code>##       [,1]           [,2]  [,3]  [,4]  
+##  [1,] &quot;219 733 8965&quot; &quot;219&quot; &quot;733&quot; &quot;8965&quot;
+##  [2,] &quot;329-293-8753&quot; &quot;329&quot; &quot;293&quot; &quot;8753&quot;
+##  [3,] NA             NA    NA    NA    
+##  [4,] &quot;595 794 7569&quot; &quot;595&quot; &quot;794&quot; &quot;7569&quot;
+##  [5,] &quot;387 287 6718&quot; &quot;387&quot; &quot;287&quot; &quot;6718&quot;
+##  [6,] NA             NA    NA    NA    
+##  [7,] &quot;233.398.9187&quot; &quot;233&quot; &quot;398&quot; &quot;9187&quot;
+##  [8,] &quot;482 952 3315&quot; &quot;482&quot; &quot;952&quot; &quot;3315&quot;
+##  [9,] &quot;239 923 8115&quot; &quot;239&quot; &quot;923&quot; &quot;8115&quot;
+## [10,] &quot;579-499-7527&quot; &quot;579&quot; &quot;499&quot; &quot;7527&quot;
+## [11,] NA             NA    NA    NA    
+## [12,] &quot;543.355.3679&quot; &quot;543&quot; &quot;355&quot; &quot;3679&quot;</code></pre>
+</div>
+<div id="str_pad" class="section level2">
+<h2>str_pad()</h2>
+<p>It pads strings to constant width.</p>
+<p><strong>str_pad(string, width, side = c(“left”, “right”, “both”), pad="")</strong> Arguments:</p>
+<ul>
+<li>string: a character vector.</li>
+<li>width: minimum width of padded strings.</li>
+<li>side: side on which padding character is added (left, right, both)</li>
+<li>pad: single padding character (default is a space).</li>
+</ul>
+<pre class="r"><code>str_pad(titanic$Name, 40, &quot;left&quot;, &quot;-&quot;) %&gt;%  #pad on the left side with &quot;-&quot;
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+—————–Braund, Mr. Owen Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+——————Heikkinen, Miss. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+—————-Allen, Mr. William Henry
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_pad(titanic$Name, 40, &quot;right&quot;, &quot;#&quot;) %&gt;% #pad on the right side with &quot;-&quot;
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris#################
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina##################
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, Mr. William Henry################
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_pad(titanic$Name, 40, &quot;both&quot;, &quot;*&quot;) %&gt;%  #pad on both side with &quot;-&quot;
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+********Braund, Mr. Owen Harris*********
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+*********Heikkinen, Miss. Laina*********
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+********Allen, Mr. William Henry********
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_pad(titanic$Name, 40, &quot;left&quot;) %&gt;%  #default for &#39;pad&#39; is a space
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="str_trunc" class="section level2">
+<h2>str_trunc()</h2>
+<p>It truncates a character string.</p>
+<p><strong>str_trunc(string, width, side=c(“right”, “left”, “center”), ellipsis = “…”)</strong></p>
+<p>Arguments: * string: a character vector. * width: maximum width of string. * side: location and content of ellipsis that indicates content has been removed.</p>
+<pre class="r"><code>str_trunc(titanic$Name, 10, &quot;left&quot;) %&gt;%  #pad on the left side with &quot;-&quot;
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+… Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…y Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…m Henry
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_trunc(titanic$Name, 10, &quot;right&quot;) %&gt;% #pad on the right side with &quot;-&quot;
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Braund,…
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumings…
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heikkin…
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futrell…
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Allen, …
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_trunc(titanic$Name, 10, &quot;center&quot;) %&gt;%  #pad on both side with &quot;-&quot;
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Brau…ris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cumi…er)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Heik…ina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Futr…el)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Alle…nry
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str_trunc(titanic$Name, 10, &quot;left&quot;) %&gt;%  #default for &#39;pad&#39; is a space
+  head(5)%&gt;% 
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+… Harris
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…Thayer)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…. Laina
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…y Peel)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…m Henry
+</td>
+</tr>
+</tbody>
+</table>
+<p>Our character string was cut off after the 7th character and the last three characters where replaced by dots. We can also specify which side (right, left, center) we want to truncate the string.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
